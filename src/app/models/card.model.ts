@@ -6,5 +6,13 @@ export interface Card {
   description: string;
 
   position: number;
-  list: List[];
+  list: List;
+}
+
+export interface UpdateCardDto {
+  title?: string;
+  description?: string;
+  position?: number;
+  listId?: string | number;
+  boardId?: string;
 }

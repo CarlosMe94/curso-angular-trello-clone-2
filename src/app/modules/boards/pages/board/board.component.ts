@@ -12,6 +12,7 @@ import { BoardsService } from '@services/boards.service';
 import { ActivatedRoute } from '@angular/router';
 import { Board } from '@models/boards.model';
 import { Card } from '@models/card.model';
+import { CardsService } from '@services/cards.service';
 
 @Component({
   selector: 'app-board',
@@ -33,7 +34,8 @@ export class BoardComponent implements OnInit {
   constructor(
     private dialog: Dialog,
     private route: ActivatedRoute,
-    private boardsService: BoardsService
+    private boardsService: BoardsService,
+    private cardsService: CardsService
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +62,14 @@ export class BoardComponent implements OnInit {
         event.currentIndex
       );
     }
+
+    const position = this.boardsService.getPosition(
+      event.container.data,
+      event.currentIndex
+    );
+    const card = event.container.data[event.currentIndex];
+    const listId = event.container.id;
+    this.updateCard(card, position, listId);
   }
 
   addColumn() {
@@ -88,5 +98,13 @@ export class BoardComponent implements OnInit {
     this.boardsService.getBoard(id).subscribe((board) => {
       this.board = board;
     });
+  }
+
+  private updateCard(card: Card, position: number, listId: number | string) {
+    this.cardsService
+      .update(card.id, { position, listId })
+      .subscribe((cardUpdated) => {
+        console.log(cardUpdated);
+      });
   }
 }
