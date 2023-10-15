@@ -13,6 +13,8 @@ import { ActivatedRoute } from '@angular/router';
 import { Board } from '@models/boards.model';
 import { Card } from '@models/card.model';
 import { CardsService } from '@services/cards.service';
+import { List } from '@models/list.model';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-board',
@@ -30,6 +32,10 @@ import { CardsService } from '@services/cards.service';
 })
 export class BoardComponent implements OnInit {
   board: Board | null = null;
+  inputCard = new FormControl<string>('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
 
   constructor(
     private dialog: Dialog,
@@ -106,5 +112,48 @@ export class BoardComponent implements OnInit {
       .subscribe((cardUpdated) => {
         console.log(cardUpdated);
       });
+  }
+
+  openFormCard(list: List) {
+    // list.showCardForm = !list.showCardForm;
+    // list:false => todos
+    // list click : true
+
+    if (this.board?.lists) {
+      this.board.lists = this.board.lists.map((iteratorList) => {
+        if (iteratorList.id === list.id) {
+          return {
+            ...iteratorList,
+            showCardForm: true,
+          };
+        }
+        return {
+          ...iteratorList,
+          showCardForm: false,
+        };
+      });
+    }
+  }
+
+  createCard(list: List) {
+    const title = this.inputCard.value;
+    if (this.board) {
+      this.cardsService
+        .create({
+          title,
+          listId: list.id,
+          boardId: this.board.id,
+          position: this.boardsService.getPostionNewCard(list.cards),
+        })
+        .subscribe((card) => {
+          list.cards.push(card);
+          this.inputCard.setValue('');
+          list.showCardForm = false;
+        });
+    }
+  }
+
+  closeCardForm(list: List) {
+    list.showCardForm = false;
   }
 }
