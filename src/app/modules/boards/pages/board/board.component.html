@@ -51,9 +51,23 @@
           </div>
         </div>
       </div>
-      <app-btn color="light" class="shrink-0" (click)="addColumn()"
-        >Add Column</app-btn
+      <div class="shrink-0"></div>
+      <app-btn
+        color="light"
+        class="shrink-0"
+        *ngIf="!showListForm"
+        (click)="showListForm = !showListForm"
+        >Add another list</app-btn
       >
+      <div *ngIf="showListForm" class="w-full">
+        <textarea [formControl]="inputList" class="w-full"></textarea>
+        <div class="flex space-x-2 justify-between">
+          <app-btn color="success" (click)="addList()">Create</app-btn>
+          <app-btn color="light" (click)="showListForm = !showListForm"
+            >Close</app-btn
+          >
+        </div>
+      </div>
     </div>
   </div>
 </div>
